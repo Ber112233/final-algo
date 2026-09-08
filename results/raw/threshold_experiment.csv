@@ -1,0 +1,12 @@
+operation_number,individual_operation_cost,capacity,load_factor,resize_occurred
+746,3,1000,0.746,False
+747,3,1000,0.747,False
+748,3,1000,0.748,False
+749,3,1000,0.749,False
+750,3,1000,0.75,False
+751,2256,2000,0.3755,True
+752,3,2000,0.376,False
+753,3,2000,0.3765,False
+754,3,2000,0.377,False
+755,3,2000,0.3775,False
+756,3,2000,0.378,False
