@@ -44,6 +44,17 @@ Reducciones y NP-completitud & Reducciones polinomiales & N & No se compara difi
 Aproximación & Algoritmos de aproximación & N & El factorial mide políticas; no aproxima una solución óptima NP-difícil.\\
 & Razón de aproximación & N & La frontera de Pareto no ofrece razón demostrable respecto de un óptimo único.\\
 & Análisis de garantías & P & Se analizan cotas amortizadas/esperadas, que no deben confundirse con garantía de aproximación.\\
+& Cobertura de vértices & N & No se implementa el algoritmo 2-aproximado ni existe un grafo de entrada.\\
+& Cobertura de conjuntos & N & Los buckets no constituyen una familia de conjuntos cuyo costo de cobertura se optimice.\\
+& Mochila aproximada & N & No hay capacidades, beneficios ni esquema de aproximación para mochila.\\
+\midrule
+Heurísticas y estrategias complementarias & Heurística vs. aproximación & P & La selección visual de un punto Pareto es una guía heurística, no una aproximación con razón probada.\\
+& Búsqueda local & N & No se explora un vecindario de configuraciones para mejorar iterativamente una solución.\\
+& Comparación con solución exacta & N & No existe un óptimo escalar exacto: el objetivo medido es multiobjetivo.\\
+& Calidad de solución & P & Se compara cada política mediante migraciones, memoria y colisiones, sin condensarlas en un puntaje.\\
+& Costo computacional & A & Tiempo, comparaciones, evaluaciones hash y migraciones se registran explícitamente.\\
+& Criterios de selección & P & La frontera de Pareto permite elegir según la prioridad de memoria, colisiones o reconstrucciones.\\
+& Limitaciones & A & La Sec. 8 delimita lenguaje, arquitectura, semillas, instrumentación y generalización.\\
 \bottomrule
 \end{longtable}
 \normalsize

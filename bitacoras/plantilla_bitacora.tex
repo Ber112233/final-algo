@@ -1,59 +1,113 @@
-\documentclass[11pt]{article}
+\documentclass[10pt]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[spanish]{babel}
-\usepackage{geometry,longtable,booktabs,array,enumitem,hyperref,xcolor,amssymb}
-\geometry{margin=2.2cm}
-\hypersetup{colorlinks=true,urlcolor=blue!60!black}
-\title{Bitácora individual\\\large Hashing dinámico con hashing universal}
-\author{\Nombre}
-\date{Entrega: 11 de septiembre de 2026}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{geometry,graphicx,tabularx,array,enumitem,xcolor,fancyhdr,mathptmx,booktabs,url}
+\geometry{top=1.45cm,bottom=1.45cm,left=1.65cm,right=1.65cm,headheight=14pt,headsep=6pt,footskip=18pt}
+\definecolor{upbblue}{HTML}{123F70}
+\definecolor{upbgold}{HTML}{D19A25}
+\definecolor{paleblue}{HTML}{EAF1F8}
+\definecolor{palegold}{HTML}{FFF8E8}
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{Algorítmica II}
+\rhead{Bitácora individual - Trabajo Final}
+\cfoot{Página \thepage\ de 2}
+\renewcommand{\headrulewidth}{0.4pt}
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0pt}
+\setlist{nosep,leftmargin=1.6em}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcommand{\campobox}[3]{%
+  \noindent\fcolorbox{#1}{#2}{\begin{minipage}{0.955\linewidth}
+  \textbf{#3}
+  \end{minipage}}}
+\newcommand{\bloque}[4]{%
+  \noindent\colorbox{#1}{\parbox{0.965\linewidth}{\textbf{#2}}}\par\vspace{-0.4pt}
+  \noindent\fcolorbox{#1}{#3}{\parbox{0.953\linewidth}{#4}}}
+
 \begin{document}
-\emergencystretch=3em
-\maketitle
+\footnotesize
+\begin{center}
+\includegraphics[width=3.2cm]{assets/upb_logo.png}\\[-1mm]
+{\large\color{upbblue} UNIVERSIDAD PRIVADA BOLIVIANA}\\
+{\normalsize Algorítmica II}\\[3mm]
+{\LARGE\bfseries BITÁCORA INDIVIDUAL DE INVESTIGACIÓN}\\[1mm]
+{\large\color{upbgold} Trabajo Final de Investigación Científica}
+\end{center}
 
-\section{Responsabilidad y criterio de trazabilidad}
-Responsabilidad primaria propuesta: \textbf{\Rol}. Esta bitácora distingue evidencia verificable, borradores asistidos por IA y tareas planificadas. Una tarea pendiente sólo puede marcarse realizada cuando \Nombre{} la revise y adjunte evidencia coherente con el repositorio.
+\vspace{1mm}
+\begin{tabularx}{\linewidth}{>{\bfseries}p{4.0cm}Y}
+Estudiante & \Nombre\\
+Grupo / tema & Hashing dinámico con hashing universal\\
+Responsabilidad primaria & \Rol\\
+Periodo & 8--11 de septiembre de 2026\\
+\end{tabularx}
 
-\section{Entradas}
-\small
-\begin{longtable}{p{1.7cm}p{2.1cm}p{3cm}p{3.2cm}p{4cm}}
-\toprule Fecha/hito & Actividad & Decisión o aprendizaje & Evidencia & Estado/verificación \\
-\midrule\endfirsthead
-\toprule Fecha/hito & Actividad & Decisión & Evidencia & Estado \\\midrule\endhead
-08-09-2026 / diagnóstico & Revisión del historial y asignación de responsabilidad & Preservar \texttt{main}; integrar selectivamente \texttt{gabo} & \EvidenciaInicial & \EstadoInicial \\
-08-09-2026 / protocolo & Alineación con el diseño factorial de la investigación & Separar amortizado, esperado y promedio empírico & Commit \texttt{2efaf13} y documento de investigación & Integración generada con Codex; requiere revisión individual \\
-08-09-2026 / piloto & Ejecución de 200 corridas y generación de ocho figuras & Conservar piloto separado de la corrida final & CSV piloto y ocho figuras & Artefactos generados; interpretación pendiente de revisión \\
-09--10-09-2026 / revisión & \TareaAsignada & Registrar correcciones y poder explicarlas en defensa & \EvidenciaEsperada & \textbf{Pendiente}: completar por el estudiante \\
-11-09-2026 / cierre & Reproducción y lectura final & No firmar resultados o fuentes no consultados & Commit o firma de validación & \textbf{Pendiente} \\
+\vspace{1mm}
+\bloque{upbgold}{Instrumento imprescindible}{palegold}{Esta bitácora es \textbf{individual, obligatoria e imprescindible}. Su finalidad es evidenciar autoría, contribución técnica y evolución del aprendizaje. No es un diario narrativo ni una lista genérica de tareas.}
+
+\vspace{2mm}
+\bloque{upbblue}{\color{white}Qué debe demostrar cada entrada}{paleblue}{Cada registro permite responder: \textbf{qué hice, qué decisión tomé, qué evidencia concreta produje, qué fuente o IA utilicé, cómo lo verifiqué y qué resultado obtuve}.}
+
+\vspace{3mm}
+{\Large\bfseries Registro de contribuciones}
+
+\vspace{2mm}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabularx}{\linewidth}{p{0.95cm}p{0.65cm}p{3.2cm}p{3.05cm}p{2.35cm}Y}
+\toprule
+\textbf{Fecha} & \textbf{Hito} & \textbf{Actividad/decisión} & \textbf{Evidencia concreta} & \textbf{Fuente/IA} & \textbf{Verificación/resultado}\\
+\midrule
+\EntradaUno\\[12mm]
+\EntradaDos\\[12mm]
+\EntradaTres\\[12mm]
+\EntradaCuatro\\[12mm]
+\EntradaCinco\\[12mm]
+\EntradaSeis\\[12mm]
 \bottomrule
-\end{longtable}
-\normalsize
+\end{tabularx}
 
-\section{Uso de inteligencia artificial}
-\subsection{Registro común de integración}
-\begin{description}[leftmargin=3.4cm,style=nextline]
-\item[Fecha y herramienta] 08-09-2026, ChatGPT/Codex.
-\item[Propósito] Auditar ramas, alinear código con el protocolo, proponer pruebas, análisis, LaTeX y bitácoras trazables.
-\item[Prompt representativo] ``Revisar \texttt{main} y \texttt{gabo}, integrar lo útil y crear documentos y correcciones conforme a las instrucciones y la investigación.''
-\item[Fragmentos aprovechados] Instrumentación, pruebas, diseño factorial, estructura del artículo y anexos.
-\item[Modificación/verificación] La suite automatizada pasó 30 pruebas. La revisión conceptual y bibliográfica debe completarla cada integrante.
-\item[Responsabilidad] Codex no es fuente científica ni autor estudiantil; \Nombre{} responde sólo por los elementos que revise, comprenda y valide.
-\end{description}
+\newpage
+\small
+{\Large\bfseries Fuentes de lectura profunda asociadas a mi contribución}
+\begin{enumerate}
+\item \FuenteUno
+\item \FuenteDos
+\end{enumerate}
 
-\subsection{Uso individual anterior}
-\IAIndividual
+\vspace{2mm}
+{\Large\bfseries Uso individual de IA}
 
-\section{Lista de validación personal}
-\begin{itemize}[label=$\square$]
-\item Abrí y consulté las fuentes que aparecen asociadas a mi aporte.
-\item Puedo explicar el algoritmo, las métricas y la diferencia entre amortizado y esperado.
-\item Ejecuté o inspeccioné las pruebas relacionadas con mi tarea.
-\item Corregí cualquier afirmación que no pudiera verificar.
-\item Mi entrada coincide con commits, archivos y resultados del repositorio.
-\end{itemize}
+\vspace{1mm}
+\footnotesize
+\begin{tabularx}{\linewidth}{p{2.6cm}p{6.2cm}Y}
+\toprule
+\textbf{Herramienta} & \textbf{Uso/prompt representativo} & \textbf{Verificación o modificación propia}\\
+\midrule
+ChatGPT/Codex & \PromptIA & \VerificacionIA\\
+\bottomrule
+\end{tabularx}
+
+\vspace{3mm}
+{\Large\bfseries Síntesis individual final}
+
+\vspace{1mm}
+\begin{enumerate}[leftmargin=2.2em,itemsep=4mm]
+\item \textbf{Mi contribución técnica más importante fue:}\\
+\ContribucionFinal
+\item \textbf{Una decisión o resultado que cambió durante el proyecto fue:}\\
+\CambioFinal
+\item \textbf{Un concepto del bloque final que puedo relacionar con el trabajo es:}\\
+\ConceptoFinal
+\item \textbf{Una limitación que reconocí en el estudio es:}\\
+\LimitacionFinal
+\end{enumerate}
 
 \vfill
-\noindent Firma o confirmación del estudiante: \rule{7cm}{0.4pt}\\[1em]
-Fecha: \rule{3cm}{0.4pt}
+\bloque{upbblue}{\color{white}Declaración individual}{paleblue}{Declaro que esta bitácora corresponde a mi trabajo real, que las evidencias señaladas pueden ser verificadas y que puedo explicar, reproducir o defender las contribuciones registradas. Las actividades marcadas como pendientes no se declaran realizadas.}
+
+\vspace{3mm}
+\textbf{Nombre:} \Nombre \hfill \textbf{Fecha:} \FechaFirma
 \end{document}
