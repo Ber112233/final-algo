@@ -1,0 +1,159 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish,es-nodecimaldot]{babel}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{graphicx,booktabs,longtable,array,enumitem,geometry,xcolor,float}
+\usepackage{hyperref}
+\geometry{margin=2.35cm}
+\hypersetup{colorlinks=true,linkcolor=blue!50!black,citecolor=blue!50!black,urlcolor=blue!60!black}
+\newcommand{\gammaeff}{\gamma_{\mathrm{ef}}}
+\title{Influencia del factor de redimensionamiento y el umbral de carga\\en tablas hash dinámicas con hashing universal}
+\author{José Cisternas \and Gabriel Olarte \and Bernardo del Aguila \and Wara Murillo}
+\date{Algorítmica II --- 11 de septiembre de 2026}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Estudiamos experimentalmente cómo el factor multiplicativo de crecimiento $\gamma$ y el umbral de carga $\tau$ afectan una tabla hash dinámica con encadenamiento separado y hashing universal. La investigación distingue tres conceptos que suelen confundirse: costo amortizado sobre una secuencia, esperanza respecto de la elección aleatoria de la función hash y promedio empírico entre semillas. Implementamos desde cero una tabla instrumentada, ejecutamos un diseño factorial bloqueado y registramos migraciones, colisiones por pares, comparaciones, memoria estable y pico, y tiempo. Contrastamos las mediciones con las predicciones $1/(\gamma-1)$ para migraciones, $\gamma/\tau$ para reserva de buckets y $n(n-1)/(2m)$ como cota esperada de pares bajo universalidad. El estudio busca una frontera de compromiso, no declarar una configuración universalmente óptima. Un experimento secundario de sondeo lineal muestra por qué las nociones de colisión no pueden trasladarse entre esquemas sin cautela.
+\end{abstract}
+
+\noindent\textbf{Palabras clave:} hashing universal, análisis amortizado, tablas hash dinámicas, colisiones, reproducibilidad.
+
+\section{Introducción}
+Las tablas hash ofrecen operaciones rápidas cuando la función dispersa adecuadamente las claves, pero una implementación dinámica debe decidir cuándo crecer y cuánto espacio reservar. Un crecimiento pequeño evita capacidad ociosa, aunque repite migraciones; uno grande reduce reconstrucciones, pero puede elevar la memoria pico. De forma análoga, un umbral bajo mantiene cadenas cortas a costa de más buckets. Estas decisiones relacionan de manera directa dos unidades del bloque final de Algorítmica II: análisis amortizado y algoritmos aleatorizados.
+
+La literatura clásica proporciona las piezas por separado. Carter y Wegman formalizan familias universales \cite{CarterWegman1979}; Tarjan organiza el análisis amortizado de secuencias \cite{Tarjan1985}; y Larson estudia tablas dinámicas y expansión \cite{Larson1988}. Evaluaciones posteriores muestran que rendimiento, carga, arquitectura y representación interactúan \cite{RichterAlvarezDittrich2015,BoetherEtAl2023}. Nuestro aporte es integrar esas piezas en un factorial reproducible sobre la misma implementación.
+
+\subsection{Pregunta e hipótesis}
+\textbf{Pregunta.} ¿Cómo influyen el factor de redimensionamiento y el umbral de carga en el costo amortizado, el consumo de memoria y el número esperado de colisiones de una tabla hash dinámica con hashing universal?
+
+\textbf{H1.} Al aumentar $\gamma$ deben disminuir el número de resizes y las migraciones amortizadas aproximadamente como $1/(\gamma-1)$, pero aumentar la capacidad ociosa y el pico. Al disminuir $\tau$ deben caer la carga y las colisiones, aumentando la reserva. La interacción formará una frontera de Pareto.
+
+\textbf{H0.} Una vez controlada la carga realizada $\alpha$, $\gamma$ y $\tau$ no tienen efecto directo adicional sobre los pares que colisionan; los efectos residuales provienen de la trayectoria de cargas, redondeo, renovación del hash o variabilidad experimental.
+
+\section{Marco teórico}
+\subsection{Hashing universal y colisiones}
+Usamos la familia modular
+\[
+ h_{a,b}(x)=((ax+b)\bmod p)\bmod m,
+\]
+donde $p=2^{61}-1$, $a\in\{1,\ldots,p-1\}$ y $b\in\{0,\ldots,p-1\}$. Los parámetros se eligen con una semilla registrada y se renuevan en cada rehash. Para un conjunto fijo, una familia universal limita la probabilidad de colisión de cada par por $1/m$ \cite{CarterWegman1979}. Por linealidad de la esperanza, si
+\[
+ C_{pares}=\sum_{j=0}^{m-1}\binom{L_j}{2},
+\]
+entonces $\mathbb{E}[C_{pares}]\le n(n-1)/(2m)$. El contador se actualiza en $O(1)$: insertar en una cadena de longitud $L$ agrega $L$ pares.
+
+Esta garantía no implica que una ejecución particular quede debajo de la esperanza ni permite atribuir sin más las fórmulas de sondeo lineal a una familia con independencia limitada. Resultados sobre tabulación simple y sondeo lineal muestran que el grado y estructura de independencia importan \cite{PatrascuThorup2012,FlajoletPobleteViola1998}.
+
+\subsection{Costo amortizado}
+Si una tabla de capacidad $m_j$ crece a aproximadamente $\gamma m_j$ cuando contiene $\tau m_j$ elementos, el ciclo siguiente admite cerca de $\tau m_j(\gamma-1)$ inserciones y la reconstrucción mueve cerca de $\tau m_j$ entradas. Por ello, el término dominante de migración por inserción es
+\[
+ \frac{\tau m_j}{\tau m_j(\gamma-1)}=\frac{1}{\gamma-1}.
+\]
+Esta es una garantía sobre la secuencia, independiente de una distribución de entradas. En contraste, las colisiones esperadas dependen de la elección aleatoria de $h$. El promedio medido sobre 30 semillas es un estimador empírico y no sustituye ninguna de las dos demostraciones.
+
+Además del método agregado anterior, la interpretación contable puede cobrar a cada inserción créditos suficientes para financiar futuras migraciones. Una función potencial basada sólo en ocupación requiere cuidado porque la política combina $\gamma$, $\tau$ y redondeo a primos; por eso la usamos como perspectiva complementaria y no como prueba principal.
+
+\subsection{Memoria y carga}
+Inmediatamente después de crecer, $\alpha_{post}\approx\tau/\gamma$. Los buckets por elemento se aproximan a $\gamma/\tau$ y la fracción ociosa a $1-\tau/\gamma$. Mientras coexisten la tabla vieja y la nueva, el pico estructural se aproxima a $(1+\gamma)/\tau$ buckets por elemento. Estas identidades motivan medir estado estable y pico por separado. Trabajos sobre arreglos redimensionables estudian precisamente la frontera tiempo--espacio \cite{BrodnikEtAl1999,TarjanZwick2024}.
+
+\section{Trabajos relacionados}
+Larson conecta carga, expansión y costo de reorganización en hashing dinámico \cite{Larson1988}. Dietzfelbinger et al. demuestran garantías fuertes para hashing perfecto dinámico, aunque con una estructura distinta \cite{DietzfelbingerEtAl1994}. Pagh y Rodler relacionan rehash aleatorio con cuckoo hashing \cite{PaghRodler2004}. Investigaciones recientes exploran estructuras dinámicas en GPU, alta carga y optimización simultánea de criterios \cite{LiEtAl2021,BenderKuszmaulKuszmaul2022,BenderEtAl2023}. No trasladamos directamente sus resultados: arquitectura, borrados y resolución de colisiones cambian la interpretación de $\tau$.
+
+\section{Metodología}
+\subsection{Implementación y tratamientos}
+La tabla principal usa encadenamiento separado, claves enteras y capacidad inicial prima $m_0=11$. Antes de insertar, si $(n+1)/m>\tau$, se asigna
+\[
+ m'=\operatorname{next\_prime}(\lceil\gamma m\rceil),
+\]
+se elige un nuevo $(a,b)$ y se migran las claves. El factorial contiene $\gamma\in\{1.25,1.5,2,3,4\}$, $\tau\in\{0.50,0.70,0.80,0.90\}$ y $N\in\{10^3,10^4,10^5\}$. Cada celda utiliza 30 semillas; son $1800$ ejecuciones para la familia aleatoria principal.
+
+La unidad experimental es `(gamma,tau,N,key\_seed,order\_seed,hash\_seed)'. Dentro de un bloque, todos los tratamientos reciben exactamente el mismo conjunto y orden de claves. El orden de los 20 tratamientos se aleatoriza para repartir deriva térmica y carga externa. Un piloto previo usa cinco semillas y $N\le10^4$.
+
+\subsection{Variables e instrumentación}
+Las dependientes primarias son elementos migrados, resizes, evaluaciones hash, comparaciones, eventos de bucket ocupado, pares finales, longitud máxima de cadena, slots estables/pico y bytes estructurales. Se registran además pico de \texttt{tracemalloc}, nanosegundos totales y latencias $p50$, $p95$, $p99$ y máxima. Se usa \texttt{perf\_counter\_ns}; el calentamiento ocurre fuera de la región medida y el estado del recolector queda en el CSV.
+
+No combinamos los contadores con pesos arbitrarios. Cada componente se informa por separado. \texttt{sys.getsizeof} recorre objetos sin duplicar identidades; \texttt{tracemalloc} es complementario y no equivale a RSS. El commit, Python, plataforma y CPU quedan junto a cada observación.
+
+\subsection{Validación y análisis}
+Las pruebas verifican tamaño, unicidad, ubicación, carga, conservación, capacidad prima, renovación de hash y equivalencia del contador incremental con $\sum_j\binom{L_j}{2}$. Para cada celda reportamos media, mediana, desviación e intervalo bootstrap del 95\%. La interpretación prioriza tamaño de efecto y orden de tendencias. Ocho figuras cubren heatmaps, trayectoria, cota universal, frecuencia teórica, Pareto y variabilidad entre semillas.
+
+\section{Resultados}
+\IfFileExists{anexos/resultados_generados.tex}{\input{anexos/resultados_generados.tex}}{Los resultados definitivos se insertan mediante el script de análisis después de completar la corrida de 1800 ejecuciones.}
+
+\begin{figure}[H]
+\centering
+\IfFileExists{figuras/final/01_heatmap_migrations.png}{\includegraphics[width=.82\linewidth]{figuras/final/01_heatmap_migrations.png}}{\fbox{Figura pendiente}}
+\caption{Migraciones normalizadas para el mayor tamaño.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\IfFileExists{figuras/final/07_pareto.png}{\includegraphics[width=.82\linewidth]{figuras/final/07_pareto.png}}{\fbox{Figura pendiente}}
+\caption{Compromiso entre migraciones, memoria y colisiones.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.82\linewidth]{figuras/final/02_heatmap_memory.png}
+\caption{Memoria estructural final por elemento. Los escalones se explican por la capacidad prima alcanzada para un $N$ fijo.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.82\linewidth]{figuras/final/03_heatmap_pair_collisions.png}
+\caption{Colisiones por pares normalizadas. El efecto de la política opera a través de la carga final y de su trayectoria.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.82\linewidth]{figuras/final/05_observed_vs_bound.png}
+\caption{Pares observados frente a la cota esperada para la familia universal.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.82\linewidth]{figuras/final/06_resize_prediction.png}
+\caption{Número observado de resizes frente a la aproximación logarítmica.}
+\end{figure}
+
+\begin{figure}[H]
+\centering
+\includegraphics[width=.82\linewidth]{figuras/final/08_seed_boxplots.png}
+\caption{Variabilidad de colisiones entre las 30 semillas para $N=100000$.}
+\end{figure}
+
+\section{Discusión}
+La hipótesis se evalúa por patrones conjuntos, no por una sola configuración ganadora. Una caída de migraciones con $\gamma$ apoya la predicción amortizada; un aumento de bytes y slots pico delimita su costo espacial. El efecto de $\tau$ debe interpretarse a través de la carga realizada: dos políticas distintas pueden terminar con capacidades diferentes y, por tanto, invertir temporalmente un orden esperado en un $N$ concreto.
+
+El contraste secundario ejecutó 540 corridas de sondeo lineal. Para $N=10000$, promediando factores de crecimiento y 30 semillas, los probes por inserción fueron 1.75, 3.46 y 8.26 para $\tau=0.50$, $0.75$ y $0.90$, respectivamente. El aumento pronunciado con la carga concuerda cualitativamente con el análisis clásico del probing \cite{FlajoletPobleteViola1998}; no se compara numéricamente con $C_{pares}$ porque es otro constructo.
+
+La cota universal es una esperanza respecto de $h$, no un máximo determinista. Por ello son informativos tanto el promedio como la dispersión entre semillas. El sondeo lineal se conserva como contraste secundario: allí una ``colisión'' es un probe sobre un slot ocupado y aparece clustering, mientras en encadenamiento la medida principal cuenta pares de claves por bucket.
+
+Los resultados también muestran el carácter discreto de la política. Para algunos valores consecutivos de $\tau$, una combinación puede terminar en la misma capacidad prima y producir igual distribución final, aunque haya alcanzado los resizes en momentos distintos. Por ello no interpretamos $\tau$ como si fuera la carga final: es un umbral de decisión, mientras $\alpha$ es el estado efectivamente observado. La tendencia agregada de pares con $\tau$ es fuerte, pero una celda aislada puede exhibir empates o inversiones por redondeo y trayectoria.
+
+El tiempo por operación siguió en términos generales el volumen de migraciones, pero no constituye una medición ``pura'' de la tabla: cada inserción fue cronometrada y \texttt{tracemalloc} permaneció activo. Esta elección mejora la observabilidad de percentiles y memoria a cambio de overhead. En consecuencia, la comparación interna entre tratamientos bloqueados es más defendible que extrapolar los nanosegundos a otra máquina o implementación.
+
+\section{Amenazas a la validez}
+La validez de constructo depende de no confundir eventos, pares, comparaciones y probes. La validez interna puede afectarse por GC, calentamiento, procesos del sistema y orden temporal; se mitiga con bloqueo, aleatorización y contadores independientes del hardware. La memoria de objetos Python no representa una implementación compacta en C. La validez externa está limitada a enteros, ejecución monohilo, una familia modular y distribuciones incluidas. Treinta semillas permiten describir variabilidad, pero no convierten una muestra en demostración. Finalmente, la cota $1/m$ debe comprobarse para la familia y universo usados; un diagnóstico empírico no reemplaza la prueba de Carter--Wegman.
+
+\section{Conclusiones y trabajo futuro}
+El estudio ofrece un procedimiento reproducible para separar los efectos directos e indirectos de $\gamma$ y $\tau$. La conclusión final sobre H1 se limita a las tendencias e intervalos observados en los CSV; no se generaliza desde Python a todas las arquitecturas. Como trabajo futuro proponemos borrados con histéresis, contracción, otros esquemas de hashing y mediciones en implementaciones compactas.
+
+\section{Declaración de uso de IA}
+Se utilizó ChatGPT/Codex el 8 de septiembre de 2026 para auditar ramas, estructurar el protocolo, asistir en código, pruebas, análisis y borradores LaTeX. Los documentos generados identifican explícitamente los elementos que requieren revisión humana. Las bitácoras contienen el detalle por artefacto y prompt representativo. Las fuentes científicas, resultados, decisiones y responsabilidad final corresponden al equipo; una sugerencia de IA no se considera fuente ni evidencia de autoría estudiantil.
+
+\bibliographystyle{plain}
+\bibliography{referencias}
+
+\appendix
+\section{Matriz Maestra de Cobertura Temática}
+\input{anexos/matriz_cobertura.tex}
+\section{Matriz bibliográfica}
+\input{anexos/matriz_bibliografica.tex}
+\section{Registro de búsqueda y verificación}
+\input{anexos/registro_busqueda.tex}
+
+\end{document}

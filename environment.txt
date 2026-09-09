@@ -1,0 +1,9 @@
+Fecha de captura inicial: 2026-09-08
+Sistema: Windows (la cadena exacta se registra en cada fila del CSV)
+Python: 3.14.3
+Dependencias directas: matplotlib, pandas, pytest
+Reloj: time.perf_counter_ns
+Memoria: tracemalloc y recorrido sys.getsizeof sin doble conteo por identidad
+Recolector de basura: estado registrado por ejecución en gc_enabled
+Commit del protocolo experimental: 2efaf13
+Ejecución: monohilo

@@ -3,3 +3,15 @@ __pycache__/
 .matplotlib-cache/
 .venv/
 *.pyc
+*.aux
+*.bbl
+*.blg
+*.log
+*.out
+*.toc
+*.synctex.gz
+/tmp/
+/main.pdf
+/compile_documents.log
+/bitacoras/plantilla_bitacora.pdf
+/dist/

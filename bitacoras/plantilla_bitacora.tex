@@ -1,0 +1,59 @@
+\documentclass[11pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel}
+\usepackage{geometry,longtable,booktabs,array,enumitem,hyperref,xcolor,amssymb}
+\geometry{margin=2.2cm}
+\hypersetup{colorlinks=true,urlcolor=blue!60!black}
+\title{Bitácora individual\\\large Hashing dinámico con hashing universal}
+\author{\Nombre}
+\date{Entrega: 11 de septiembre de 2026}
+\begin{document}
+\emergencystretch=3em
+\maketitle
+
+\section{Responsabilidad y criterio de trazabilidad}
+Responsabilidad primaria propuesta: \textbf{\Rol}. Esta bitácora distingue evidencia verificable, borradores asistidos por IA y tareas planificadas. Una tarea pendiente sólo puede marcarse realizada cuando \Nombre{} la revise y adjunte evidencia coherente con el repositorio.
+
+\section{Entradas}
+\small
+\begin{longtable}{p{1.7cm}p{2.1cm}p{3cm}p{3.2cm}p{4cm}}
+\toprule Fecha/hito & Actividad & Decisión o aprendizaje & Evidencia & Estado/verificación \\
+\midrule\endfirsthead
+\toprule Fecha/hito & Actividad & Decisión & Evidencia & Estado \\\midrule\endhead
+08-09-2026 / diagnóstico & Revisión del historial y asignación de responsabilidad & Preservar \texttt{main}; integrar selectivamente \texttt{gabo} & \EvidenciaInicial & \EstadoInicial \\
+08-09-2026 / protocolo & Alineación con el diseño factorial de la investigación & Separar amortizado, esperado y promedio empírico & Commit \texttt{2efaf13} y documento de investigación & Integración generada con Codex; requiere revisión individual \\
+08-09-2026 / piloto & Ejecución de 200 corridas y generación de ocho figuras & Conservar piloto separado de la corrida final & CSV piloto y ocho figuras & Artefactos generados; interpretación pendiente de revisión \\
+09--10-09-2026 / revisión & \TareaAsignada & Registrar correcciones y poder explicarlas en defensa & \EvidenciaEsperada & \textbf{Pendiente}: completar por el estudiante \\
+11-09-2026 / cierre & Reproducción y lectura final & No firmar resultados o fuentes no consultados & Commit o firma de validación & \textbf{Pendiente} \\
+\bottomrule
+\end{longtable}
+\normalsize
+
+\section{Uso de inteligencia artificial}
+\subsection{Registro común de integración}
+\begin{description}[leftmargin=3.4cm,style=nextline]
+\item[Fecha y herramienta] 08-09-2026, ChatGPT/Codex.
+\item[Propósito] Auditar ramas, alinear código con el protocolo, proponer pruebas, análisis, LaTeX y bitácoras trazables.
+\item[Prompt representativo] ``Revisar \texttt{main} y \texttt{gabo}, integrar lo útil y crear documentos y correcciones conforme a las instrucciones y la investigación.''
+\item[Fragmentos aprovechados] Instrumentación, pruebas, diseño factorial, estructura del artículo y anexos.
+\item[Modificación/verificación] La suite automatizada pasó 30 pruebas. La revisión conceptual y bibliográfica debe completarla cada integrante.
+\item[Responsabilidad] Codex no es fuente científica ni autor estudiantil; \Nombre{} responde sólo por los elementos que revise, comprenda y valide.
+\end{description}
+
+\subsection{Uso individual anterior}
+\IAIndividual
+
+\section{Lista de validación personal}
+\begin{itemize}[label=$\square$]
+\item Abrí y consulté las fuentes que aparecen asociadas a mi aporte.
+\item Puedo explicar el algoritmo, las métricas y la diferencia entre amortizado y esperado.
+\item Ejecuté o inspeccioné las pruebas relacionadas con mi tarea.
+\item Corregí cualquier afirmación que no pudiera verificar.
+\item Mi entrada coincide con commits, archivos y resultados del repositorio.
+\end{itemize}
+
+\vfill
+\noindent Firma o confirmación del estudiante: \rule{7cm}{0.4pt}\\[1em]
+Fecha: \rule{3cm}{0.4pt}
+\end{document}

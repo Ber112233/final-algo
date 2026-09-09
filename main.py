@@ -30,7 +30,7 @@ def build_parser() -> argparse.ArgumentParser:
 
     plot = subparsers.add_parser("plot", help="generate all figures")
     plot.add_argument("--input", type=Path, default=Path("data/raw/results.csv"))
-    plot.add_argument("--figures-dir", type=Path, default=Path("figures/final"))
+    plot.add_argument("--figures-dir", type=Path, default=Path("figuras/final"))
     plot.add_argument("--resizes", type=Path, default=Path("data/raw/resize_events.csv"))
 
     threshold = subparsers.add_parser("threshold-experiment", help="observe a resize cost peak")

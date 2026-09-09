@@ -12,7 +12,7 @@ import pandas as pd
 
 DEFAULT_INPUT = Path("data/raw/results.csv")
 DEFAULT_RESIZES = Path("data/raw/resize_events.csv")
-DEFAULT_FIGURES = Path("figures/final")
+DEFAULT_FIGURES = Path("figuras/final")
 
 
 def _heatmap(data: pd.DataFrame, metric: str, title: str, path: Path) -> None:
@@ -72,8 +72,6 @@ def generate_plots(input_path: Path = DEFAULT_INPUT, figures_dir: Path = DEFAULT
     fig, ax = plt.subplots(figsize=(7, 5))
     scatter = ax.scatter(largest["migrations_per_insertion"], largest["bytes_per_element"],
                          c=largest["pair_collisions_per_key"], s=80, cmap="plasma")
-    for row in largest.itertuples():
-        ax.annotate(f"{row.gamma_nominal:g}/{row.tau:.2f}", (row.migrations_per_insertion, row.bytes_per_element), fontsize=7)
     ax.set(xlabel="Migraciones por inserción", ylabel="Bytes por elemento", title="Frontera multiobjetivo (color: colisiones/clave)")
     fig.colorbar(scatter, ax=ax, label="Colisiones por pares por clave"); ax.grid(alpha=.25); fig.tight_layout()
     path = figures_dir / "07_pareto.png"; fig.savefig(path, dpi=180); plt.close(fig); created.append(path)

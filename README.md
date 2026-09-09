@@ -1,105 +1,70 @@
-# Implementación Experimental de una Tabla Hash Dinámica
+# Hashing dinámico: experimento reproducible
 
-Trabajo Final de Investigación Científica de **Algorítmica II**. El proyecto implementa desde cero una tabla hash para claves enteras y una infraestructura reproducible para estudiar:
+Proyecto final de Algorítmica II de José Cisternas, Gabriel Olarte, Bernardo del Aguila y Wara Murillo.
 
-> ¿Cómo afectan el factor de redimensionamiento y el umbral de carga de una tabla hash dinámica al costo amortizado, la memoria utilizada y el número esperado de colisiones?
+> ¿Cómo influyen el factor de redimensionamiento y el umbral de carga en el costo amortizado, el consumo de memoria y el número esperado de colisiones de una tabla hash dinámica con hashing universal?
 
-La hipótesis inicial plantea un compromiso entre frecuencia de resize, colisiones y memoria. El código no impone esa conclusión: los CSV y las gráficas se usan para evaluarla.
-
-## Diseño
-
-- **Separate chaining:** cada posición es una lista (bucket).
-- **Colisión:** una clave nueva llega a un bucket con al menos otra clave. Los duplicados rechazados y las reinserciones internas no suman colisiones.
-- **Hashing universal:** `h(x) = ((a*x+b) mod p) mod m`, con `a` y `b` obtenidos de `random.Random(seed)`.
-- **Primo:** `p = 2^61 - 1 = 2305843009213693951`, suficientemente grande para el universo previsto.
-- **Resize:** ocurre cuando `size/capacity > load_threshold`; la capacidad nueva es `max(old+1, ceil(old*growth_factor))`.
-- **Rehash:** usa un método interno; no incrementa inserciones originales, no comprueba resize y carga su costo a `rehash_cost`.
-
-### Modelo abstracto de costo
-
-Una inserción exitosa cuesta 3 unidades: hash, acceso al bucket y append. Un duplicado rechazado cuesta 2. Cada elemento redistribuido cuesta 3 unidades. Por tanto:
-
-```text
-total_operation_cost = insert_cost + rehash_cost
-amortized_cost = total_operation_cost / original_insertions
-```
-
-El tiempo medido con `time.perf_counter()` se registra aparte y nunca se confunde con el costo abstracto.
+La implementación principal usa encadenamiento separado. El sondeo lineal adaptado de la rama `gabo` es únicamente un contraste secundario: sus colisiones son probes y no se mezclan con los pares que coinciden en un bucket.
 
 ## Estructura
 
-```text
-src/             hashing, tabla, generadores y dataclass de métricas
-experiments/     configuración, matriz y experimentos especializados
-analysis/        resumen estadístico y gráficas
-tests/           pruebas automatizadas
-results/raw/     una fila por ejecución
-results/summary/ estadísticas agrupadas
-figures/         imágenes PNG no interactivas
-data/            datos auxiliares opcionales
-```
+- `src/`: estructuras, hashing, generadores y métricas.
+- `experiments/`: factorial principal y experimentos secundarios.
+- `analysis/`: resumen bootstrap y ocho figuras del protocolo.
+- `data/raw/`: datos crudos y eventos de resize.
+- `data/processed/`: resúmenes derivados.
+- `results/`: corrida preliminar anterior, conservada por trazabilidad.
+- `figuras/pilot/` y `figuras/final/`: figuras del piloto y corrida final.
+- `tests/`: pruebas de invariantes y reproducibilidad.
+- `anexos/` y `bitacoras/`: material LaTeX obligatorio.
 
-El detalle de fases y decisiones está en [`IMPLEMENTATION_PLAN.md`](IMPLEMENTATION_PLAN.md).
+## Instalación y validación
 
-## Instalación
-
-```bash
+```powershell
 python -m venv .venv
+.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+python -m pytest -q
 ```
 
-Linux/macOS: `source .venv/bin/activate`
+## Reproducción
 
-Windows PowerShell: `.venv\Scripts\Activate.ps1`
+```powershell
+# Piloto: 200 corridas
+python main.py experiment --repetitions 5 --max-n 10000 --overwrite
 
-```bash
-pip install -r requirements.txt
-python -m pytest
-```
-
-## Ejecución
-
-Piloto pequeño:
-
-```bash
-python main.py experiment --repetitions 2 --max-n 5000 --overwrite
-```
-
-Experimento definitivo (6 tamaños, 9 configuraciones y 30 repeticiones):
-
-```bash
-python main.py experiment --repetitions 30 --max-n 100000 --input random --overwrite
-```
-
-Sin `--overwrite`, un CSV existente produce un error. Se admiten entradas `random`, `sequential` y `clustered`.
-
-```bash
-python main.py threshold-experiment --overwrite
-python main.py collision-experiment --repetitions 30 --overwrite
+# Factorial final: 1800 corridas
+python main.py experiment --repetitions 30 --max-n 100000 --overwrite
 python main.py analyze
 python main.py plot
 ```
 
-`analyze` agrupa por `n`, `growth_factor`, `load_threshold` e `input_type`, y calcula media, mediana, desviación estándar, mínimo y máximo. `plot` genera diez visualizaciones principales y las dos especializadas cuando existen sus datos.
+La matriz usa cinco valores de `gamma`, cuatro de `tau`, tres tamaños y 30 semillas. Dentro de cada bloque se conservan conjunto y orden de claves, mientras el orden de los 20 tratamientos se aleatoriza. El CSV registra commit, entorno, semillas separadas, contadores deterministas, memoria estructural y pico de `tracemalloc`.
 
-## Reproducibilidad y equidad
+Experimentos complementarios:
 
-Toda aleatoriedad tiene una semilla registrada. Para cada bloque `(n, seed, input_type, repetition)` el dataset se genera una sola vez y se entrega sin cambios a las nueve combinaciones. La función universal también recibe esa semilla. El generador agrupado selecciona aproximadamente `sqrt(n)` centros y usa offsets gaussianos; no conoce los parámetros del hash.
+```powershell
+python main.py threshold-experiment --overwrite
+python main.py collision-experiment --repetitions 30 --overwrite
+python -c "from experiments.linear_probing_experiment import run_secondary; run_secondary(overwrite=True)"
+```
 
-Treinta repeticiones reducen el efecto de semillas particulares y del ruido temporal. Las métricas algorítmicas son independientes del hardware.
+## Convenciones
 
-## Memoria
+- Capacidad inicial prima `m0=11`.
+- Crecimiento antes de insertar si `(n+1)/m > tau`.
+- Nueva capacidad `next_prime(ceil(gamma*m))` y nuevo `(a,b)` por rehash.
+- `insert_collision_events` y `pair_collisions` son métricas diferentes.
+- Amortizado, esperado y promedio empírico no se intercambian.
+- Los componentes de costo se publican por separado, sin pesos arbitrarios ocultos.
 
-`capacity`, `unused_capacity` y `utilization` son mediciones estructurales. `estimated_memory` suma `sys.getsizeof` de la lista principal, buckets y claves; es una aproximación del modelo de objetos de Python, no RAM exacta del proceso.
+## Compilación
 
-## Resultados incluidos
+```powershell
+pdflatex main.tex
+bibtex main
+pdflatex main.tex
+pdflatex main.tex
+```
 
-Tras validar un piloto con `n = 100, 1000, 5000`, se ejecutó la matriz definitiva aleatoria de 1620 ejecuciones: seis tamaños, nueve configuraciones y 30 repeticiones. Los CSV crudos, el resumen y las figuras incluidos corresponden a esa corrida; la interpretación científica debe considerar las limitaciones siguientes.
-
-## Limitaciones
-
-- Python y el sistema operativo introducen overhead y ruido temporal.
-- `sys.getsizeof` no representa toda la memoria residente.
-- Sólo se estudian claves `int` y distribuciones limitadas.
-- Separate chaining no se generaliza automáticamente a open addressing.
-- El conteo de colisiones usa la definición operacional del estudio.
-- Costo amortizado y costo esperado son distintos: el primero resume una secuencia y el segundo requiere un modelo probabilístico.
+Las bitácoras se compilan individualmente desde `bitacoras/`. Todo borrador asistido por IA debe ser revisado por el estudiante correspondiente antes de entregar.
