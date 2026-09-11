@@ -17,6 +17,8 @@ La implementación principal usa encadenamiento separado. El sondeo lineal adapt
 - `figuras/pilot/` y `figuras/final/`: figuras del piloto y corrida final.
 - `tests/`: pruebas de invariantes y reproducibilidad.
 - `anexos/` y `bitacoras/`: material LaTeX obligatorio.
+- `investigacion_hashing_dinamico.md`: investigación bibliográfica, fundamentos teóricos y diseño experimental que sustentan el artículo.
+- `entregables/`: versiones finales en PDF del artículo y las cuatro bitácoras individuales.
 
 ## Instalación y validación
 
@@ -61,10 +63,15 @@ python -c "from experiments.linear_probing_experiment import run_secondary; run_
 ## Compilación
 
 ```powershell
-pdflatex main.tex
-bibtex main
-pdflatex main.tex
-pdflatex main.tex
+powershell -File scripts/compile_documents.ps1
 ```
 
-Las bitácoras se compilan individualmente desde `bitacoras/`. Todo borrador asistido por IA debe ser revisado por el estudiante correspondiente antes de entregar.
+El script compila `main.tex` y las cuatro bitácoras individuales. Los cinco PDF listos para entregar se encuentran en `entregables/`:
+
+- `entregables/articulo.pdf`
+- `entregables/Jose_Cisternas_bitacora.pdf`
+- `entregables/Gabriel_Olarte_bitacora.pdf`
+- `entregables/Bernardo_del_Aguila_bitacora.pdf`
+- `entregables/Wara_Murillo_bitacora.pdf`
+
+También se conserva una copia compatible con el flujo anterior en `output/pdf/`. Todo borrador asistido por IA debe ser revisado por el estudiante correspondiente antes de entregar.

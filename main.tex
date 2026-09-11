@@ -152,19 +152,85 @@ Desde la raíz, \texttt{powershell -File scripts/reproduce.ps1} ejecuta pruebas,
 \section{Resultados}
 \IfFileExists{anexos/resultados_generados.tex}{\input{anexos/resultados_generados.tex}}{Resultados no disponibles.}
 
+La Figura~\ref{fig:migraciones} concentra el resultado principal sobre el
+costo de reconstrucción. Cada celda es el promedio de 30 semillas para
+$N=100000$ y combina un factor de crecimiento con un umbral de carga. El
+cambio de color de izquierda a derecha muestra una reducción dominante
+de las migraciones cuando aumenta $\gamma$: al promediar los cuatro
+umbrales, la tasa baja de 4.508 migraciones por inserción con
+$\gamma=1.25$ a 0.723 con $\gamma=4$, es decir, cerca de 84\%. Esta caída
+respalda la primera parte de H1 y es consistente con la predicción
+amortizada proporcional a $1/(\gamma-1)$: un crecimiento amplio exige
+menos reconstrucciones a lo largo de la secuencia.
+
 \begin{figure}[H]
 \centering
 \includegraphics[width=.78\linewidth]{figuras/final/01_heatmap_migrations.png}
-\caption{Migraciones por inserción para $N=100000$. Los valores disminuyen al crecer $\gamma$.}
+\caption{Migraciones por inserción para $N=100000$. Cada celda resume 30
+semillas; el descenso general de izquierda a derecha respalda el efecto
+amortizado esperado al aumentar $\gamma$.}
 \label{fig:migraciones}
 \end{figure}
+
+El mapa también muestra por qué la predicción debe interpretarse de
+manera agregada. La secuencia de capacidades es discreta y se redondea a
+primos; además, el experimento se detiene exactamente en $N=100000$. Por
+eso aparecen excepciones locales como $\tau=0.50$, donde $\gamma=4$
+registra 1.31 migraciones por inserción frente a 0.64 con $\gamma=3$: el
+último salto grande puede quedar cerca del final de la corrida y pesar
+más en ese promedio particular. No obstante, la correlación de rangos
+entre $\gamma$ y las migraciones agregadas es $-1.000$, y el número medio
+de resizes desciende de 40.2 a 7.2 entre los extremos de $\gamma$. El
+tiempo por operación acompaña esta tendencia: baja de 66080.8 a 27944.1
+ns, aunque se considera una métrica secundaria porque incluye la
+instrumentación de cada inserción.
+
+La Figura~\ref{fig:pareto} completa la demostración al representar en una
+misma vista las tres consecuencias de la política de crecimiento. El eje
+horizontal mide migraciones por inserción, el vertical mide bytes
+estructurales por elemento y el color codifica pares que colisionan por
+clave. Por tanto, los tratamientos deseables se desplazarían hacia la
+esquina inferior izquierda y, al mismo tiempo, tendrían colores asociados
+con pocas colisiones. La nube no contiene un punto que reúna las tres
+condiciones, lo que respalda la afirmación de H1 de que existe una
+frontera de compromiso, no un ganador universal.
 
 \begin{figure}[H]
 \centering
 \includegraphics[width=.78\linewidth]{figuras/final/07_pareto.png}
-\caption{Compromiso entre migraciones, memoria y colisiones. Ningún tratamiento minimiza simultáneamente las tres métricas.}
+\caption{Compromiso para $N=100000$: migraciones en el eje horizontal,
+memoria en el vertical y colisiones por clave en el color. Ningún
+tratamiento minimiza simultáneamente las tres métricas.}
 \label{fig:pareto}
 \end{figure}
+
+Los extremos de la nube permiten cuantificar el intercambio. La menor
+tasa de migración corresponde a $(\gamma,\tau)=(4,0.70)$, con 0.460
+migraciones por inserción, 180.12 bytes por elemento y 0.236 pares por
+clave. El menor uso de memoria aparece en $(1.5,0.90)$, con 122.86 bytes,
+pero aumenta a 2.031 migraciones y 0.431 pares por clave. Finalmente,
+$(4,0.50)$ logra la menor tasa de colisiones, 0.048, a costa de 566.99
+bytes por elemento, el punto alto y aislado del gráfico. Estos casos
+muestran que optimizar reconstrucciones, memoria o colisiones conduce a
+elecciones diferentes.
+
+El color también ayuda a interpretar el papel de $\tau$. Agregando sobre
+$\gamma$, los pares por clave aumentan de 0.182 con $\tau=0.50$ a 0.307
+con $\tau=0.90$; la correlación de rangos entre umbral y colisiones es
+0.949. Esto respalda la segunda parte de H1: esperar más antes de crecer
+tiende a mantener una tabla más cargada y eleva las colisiones. Sin
+embargo, $\tau$ es un disparador y no determina por sí solo la carga
+final. Dos políticas pueden alcanzar la misma capacidad prima y producir
+resultados iguales, de modo que no se exige monotonía estricta en cada
+tratamiento. Por la misma razón, estos resultados no permiten rechazar
+H0 como afirmación causal una vez controlada exactamente la carga final.
+
+Las 30 repeticiones por celda permiten atribuir estos patrones a la
+política y no a una única función hash favorable. Como comprobación
+adicional, para $N=100000$ el cociente medio entre pares observados y la
+esperanza universal fue 0.964. El valor cercano a uno es coherente con el
+modelo probabilístico, pero no se interpreta como una cota que deba
+cumplirse en cada semilla.
 
 El contraste de sondeo lineal contiene 540 corridas. Para $N=10000$, promediando factores de crecimiento y 30 semillas, los probes por inserción fueron 1.75, 3.46 y 8.26 para $\tau=0.50$, 0.75 y 0.90. Se informa como resultado separado porque su noción de colisión difiere de $C_{\mathrm{pares}}$.
 
@@ -255,16 +321,4 @@ Wara Murillo & Sí & \texttt{Wara\_Murillo\_bitacora.pdf/.tex}\\
 \bottomrule
 \end{tabularx}
 \end{table}
-
-\section{Checklist de reproducibilidad}
-\enlargethispage{2cm}
-\begin{itemize}[label=$\square$,nosep]
-\item Código Python incluido.
-\item Datos y generadores de instancias incluidos.
-\item Semillas aleatorias registradas.
-\item Versiones de dependencias indicadas.
-\item Instrucciones de ejecución en \texttt{README.md}.
-\item Scripts para reproducir tablas y figuras.
-\end{itemize}
-
 \end{document}
