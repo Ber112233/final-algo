@@ -1,0 +1,17 @@
+\def\Nombre{Gabriel Olarte}
+\def\Rol{Línea base de direccionamiento abierto y sondeo lineal}
+\def\EntradaUno{08/09 & 1 & Implementé un prototipo de tabla con sondeo lineal. & Commit \texttt{69b5543}, rama \texttt{gabo}. & Desarrollo propio & Autoría Git verificable; explicación personal pendiente.}
+\def\EntradaDos{08/09 & 1 & Propuse crecimiento y conteo de probes para la línea base. & Código monolítico de \texttt{gabo}. & Código del prototipo & Se preservó la idea, no la estructura completa de la rama.}
+\def\EntradaTres{08/09 & 2 & Se adaptó el prototipo a la arquitectura modular. & \path{src/linear_probing_hash_table.py}. & Codex sobre el commit & Gabriel debe revisar diferencias antes de firmar.}
+\def\EntradaCuatro{08/09 & 3 & Se ejecutó el contraste con varios umbrales. & \path{data/raw/linear_probing.csv}. & Script experimental & 540 corridas; revisión individual pendiente.}
+\def\EntradaCinco{09/09 & 4 & Tarea asignada: verificar duplicados y semántica de probes. & Pruebas del módulo y comentario/commit. & Flajolet et al. (1998) & \textbf{Pendiente}: no declarar concluida sin evidencia.}
+\def\EntradaSeis{10/09 & 4 & Tarea asignada: interpretar la curva de probes por carga. & Sección 6 y bitácora validada. & Paper + CSV & \textbf{Pendiente}: completar y corregir si corresponde.}
+\def\FuenteUno{Flajolet, Poblete y Viola (1998), análisis de sondeo lineal; lectura asignada sobre dependencia con la carga y clustering. Registrar páginas consultadas antes de firmar.}
+\def\FuenteDos{Pătraşcu y Thorup (2012), independencia en hashing; lectura asignada para justificar por qué una garantía universal no se traslada automáticamente a probing.}
+\def\PromptIA{Adaptar mi prototipo de sondeo lineal sin reemplazar la tabla principal y proponer pruebas que distingan probes, colisiones por evento y pares.}
+\def\VerificacionIA{La adaptación y los resultados fueron generados con Codex. Debo inspeccionar el módulo, ejecutar sus pruebas y registrar cualquier corrección propia antes de firmar.}
+\def\ContribucionFinal{El prototipo verificable del commit \texttt{69b5543}, que originó la línea base de sondeo lineal. La adaptación posterior requiere mi confirmación.}
+\def\CambioFinal{El prototipo dejó de competir como implementación principal y se convirtió en contraste secundario para evitar mezclar esquemas y métricas.}
+\def\ConceptoFinal{En sondeo lineal, una colisión se observa como probes adicionales y puede producir clustering; no equivale a contar pares en encadenamiento.}
+\def\LimitacionFinal{El historial prueba la existencia del commit, pero no reemplaza mi explicación del diseño ni la verificación de la adaptación realizada después.}
+\input{bitacoras/plantilla_bitacora.tex}

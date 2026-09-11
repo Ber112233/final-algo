@@ -1,91 +1,87 @@
 import math
-
 import pytest
 
-from src.dynamic_hash_table import DynamicHashTable
+from src.dynamic_hash_table import DynamicHashTable, is_prime, next_prime
+from src.linear_probing_hash_table import LinearProbingHashTable
 
 
-def test_insert_contains_and_load_factor() -> None:
-    table = DynamicHashTable(initial_capacity=10, load_threshold=0.9)
+def test_prime_capacity_helpers() -> None:
+    assert next_prime(11) == 11
+    assert next_prime(12) == 13
+    assert is_prime(97)
+
+
+def test_insert_contains_and_invariants() -> None:
+    table = DynamicHashTable(initial_capacity=11, load_threshold=.9)
     for key in (10, 20, 30, 40, 50):
         assert table.insert(key)
     assert table.size == 5
     assert all(table.contains(key) for key in (10, 20, 30, 40, 50))
-    assert table.load_factor() == pytest.approx(0.5)
+    table.validate_invariants()
 
 
-def test_duplicate_is_rejected_without_collision() -> None:
-    table = DynamicHashTable(initial_capacity=10)
+def test_duplicate_does_not_change_size() -> None:
+    table = DynamicHashTable()
     assert table.insert(10)
-    collisions = table.collisions
     assert not table.insert(10)
-    assert table.size == 1
-    assert table.original_insertions == 1
-    assert table.collisions == collisions
+    assert table.size == table.original_insertions == 1
 
 
-@pytest.mark.parametrize(
-    ("growth_factor", "expected_capacity"), [(1.5, 15), (2.0, 20), (3.0, 30)]
-)
-def test_growth_factors(growth_factor: float, expected_capacity: int) -> None:
-    table = DynamicHashTable(
-        initial_capacity=10, growth_factor=growth_factor, load_threshold=0.5
-    )
+@pytest.mark.parametrize("gamma", [1.25, 1.5, 2.0, 3.0, 4.0])
+def test_resize_uses_prime_capacity_and_effective_gamma(gamma: float) -> None:
+    table = DynamicHashTable(initial_capacity=11, growth_factor=gamma, load_threshold=.5)
     for key in range(6):
         table.insert(key)
-    assert table.capacity == expected_capacity
+    expected = next_prime(math.ceil(11 * gamma))
+    assert table.capacity == expected
+    event = table.resize_history[0]
+    assert event.gamma_effective == pytest.approx(expected / 11)
+    assert event.alpha_pre == pytest.approx(5 / 11)
+    assert event.alpha_post == pytest.approx(5 / expected)
 
 
-def test_resize_preserves_all_keys_and_metrics() -> None:
-    table = DynamicHashTable(
-        initial_capacity=4, growth_factor=2.0, load_threshold=0.5
-    )
-    keys = list(range(20))
+def test_resize_selects_fresh_hash_and_preserves_keys() -> None:
+    table = DynamicHashTable(initial_capacity=5, growth_factor=2, load_threshold=.5, seed=7)
+    initial_hash = (table.hash_function.a, table.hash_function.b)
+    keys = list(range(100))
     for key in keys:
         table.insert(key)
-    assert table.capacity > 4
-    assert table.rehashes >= 1
-    assert table.rehash_operations >= table.rehashes
-    assert table.size == len(keys)
+    assert table.resize_count > 0
+    assert (table.hash_function.a, table.hash_function.b) != initial_hash
     assert all(table.contains(key) for key in keys)
+    table.validate_invariants()
 
 
-def test_collision_count_is_reproducible() -> None:
-    table = DynamicHashTable(initial_capacity=8, load_threshold=0.9, seed=9)
-    first_key = 1
-    target_index = table.hash_function.hash(first_key, table.capacity)
-    second_key = next(
-        key
-        for key in range(2, 10_000)
-        if table.hash_function.hash(key, table.capacity) == target_index
-    )
-    table.insert(first_key)
-    table.insert(second_key)
-    assert table.collisions == 1
-
-
-def test_cost_and_memory_metrics_are_coherent() -> None:
-    table = DynamicHashTable(initial_capacity=4, load_threshold=0.5)
-    for key in range(8):
+def test_pair_counter_matches_full_recomputation() -> None:
+    table = DynamicHashTable(initial_capacity=11, load_threshold=.9, seed=9)
+    for key in range(200):
         table.insert(key)
-    assert table.total_operation_cost == table.insert_cost + table.rehash_cost
-    assert table.amortized_cost() == pytest.approx(
-        table.total_operation_cost / table.original_insertions
-    )
-    assert table.unused_capacity() == table.capacity - table.size
-    assert table.utilization() == pytest.approx(table.size / table.capacity)
-    assert table.estimate_memory() > 0
+        expected = sum(len(bucket) * (len(bucket) - 1) // 2 for bucket in table.table)
+        assert table.pair_collisions_current == expected
 
 
-@pytest.mark.parametrize(
-    "kwargs",
-    [
-        {"initial_capacity": 0},
-        {"growth_factor": 1.0},
-        {"load_threshold": 0.0},
-        {"load_threshold": 1.0},
-    ],
-)
-def test_invalid_configuration(kwargs: dict[str, float]) -> None:
+def test_metrics_and_peak_are_coherent() -> None:
+    table = DynamicHashTable(initial_capacity=5, load_threshold=.5)
+    for key in range(30):
+        table.insert(key)
+    assert table.hash_evaluations >= table.original_insertions
+    assert table.bucket_assignments == table.original_insertions + table.moved_entries
+    assert table.allocated_bucket_slots_peak >= table.capacity
+    assert table.structural_bytes() > 0
+
+
+@pytest.mark.parametrize("kwargs", [{"initial_capacity": 0}, {"growth_factor": 1.0},
+                                     {"load_threshold": 0.0}, {"load_threshold": 1.0}])
+def test_invalid_configuration(kwargs) -> None:
     with pytest.raises(ValueError):
-        DynamicHashTable(**kwargs)  # type: ignore[arg-type]
+        DynamicHashTable(**kwargs)
+
+
+def test_linear_probing_secondary_rejects_duplicates_and_survives_resize() -> None:
+    table = LinearProbingHashTable(initial_capacity=5, load_threshold=.5)
+    for key in range(40):
+        assert table.insert(key)
+    assert not table.insert(10)
+    assert table.size == 40
+    assert table.resize_count > 0
+    assert all(table.contains(key) for key in range(40))

@@ -1,0 +1,60 @@
+\small
+\begin{longtable}{p{2.7cm}p{3.4cm}c p{6.2cm}}
+\toprule
+Unidad & Subtema & Estado & Justificación técnica y evidencia \\
+\midrule\endfirsthead
+\toprule Unidad & Subtema & Estado & Justificación técnica y evidencia \\\midrule\endhead
+Análisis amortizado & Secuencias de operaciones & A & El costo se evalúa sobre secuencias completas de inserciones; Sec. 2.2 y CSV.\\
+& Método agregado & A & Se suman migraciones de todos los resizes y se normalizan por $N$; Sec. 2.2.\\
+& Método contable & P & Los créditos por inserción ofrecen una interpretación de cómo financiar migraciones; no es la prueba principal.\\
+& Método potencial & P & Se discute como alternativa; ocupación sola no captura redondeo primo e interacción $(\gamma,\tau)$.\\
+& Arreglos dinámicos & A & La reserva geométrica y frontera tiempo--espacio fundamentan el redimensionamiento; Sec. 2.3.\\
+& Contadores y operaciones & A & Resizes ocasionales, elementos movidos y costo por operación están instrumentados en \texttt{src/}.\\
+\midrule
+Probabilidad y esperanza & Probabilidad básica & A & La elección de $(a,b)$ define el espacio aleatorio y los eventos de colisión.\\
+& Esperanza matemática & A & Se contrasta $\mathbb{E}[C_{pares}]\le n(n-1)/(2m)$; Sec. 2.1 y Fig. 5.\\
+& Variables indicadoras & A & Cada par aporta una indicadora; su suma produce $C_{pares}$ y permite linealidad de esperanza.\\
+& Amortizado vs. esperado & A & Se distinguen explícitamente garantía de secuencia, esperanza sobre $h$ y media empírica.\\
+\midrule
+Algoritmos aleatorizados & Las Vegas & P & La tabla siempre conserva corrección; la función aleatoria afecta costo, no respuesta.\\
+& Monte Carlo & N & No se acepta probabilidad de respuesta incorrecta: todas las inserciones se verifican.\\
+& Probabilidad de error & N & No existe salida aproximada o errónea que deba amplificarse mediante repetición.\\
+& Garantías de ejecución & P & Se comparan corrección determinista, costo amortizado y colisiones esperadas.\\
+& Selección aleatoria & P & Se eligen aleatoriamente $(a,b)$ y el orden de tratamientos, no pivotes algorítmicos.\\
+& Hashing universal & A & Es el mecanismo aleatorizado central; \texttt{src/universal\_hash.py}.\\
+\midrule
+P, NP y verificadores & Problemas de decisión & N & La pregunta estima rendimiento multiobjetivo, no decide un lenguaje sí/no.\\
+& Certificados & N & Las observaciones no requieren testigo para una instancia ``sí''.\\
+& Verificadores & N & No se formula certificado; la corrección se comprueba mediante invariantes polinomiales.\\
+& Clase P & P & Inserción y validaciones tienen algoritmos polinomiales; no se estudia completitud.\\
+& Clase NP & P & Se explica que pertenencia exige problema de decisión y verificador; esa forma no es central aquí.\\
+& Decisión vs. optimización & P & Elegir una política Pareto es optimización multiobjetivo, distinta de una decisión formal.\\
+\midrule
+Reducciones y NP-completitud & Reducciones polinomiales & N & No se compara dificultad de lenguajes mediante transformaciones de instancias.\\
+& Dirección de una reducción & N & No se afirma dureza; invertir una reducción no demostraría la implicación buscada.\\
+& Prueba de NP-completitud & N & Faltan deliberadamente lenguaje, pertenencia a NP y reducción desde un problema base.\\
+& SAT / 3-SAT & N & No modela la selección de parámetros ni la operación de la tabla.\\
+& Clique & N & Las colisiones forman grupos por bucket, pero no equivalen a clique de una instancia arbitraria.\\
+& Conjunto independiente & N & Evitar colisiones no se formula como selección de vértices sin adyacencias.\\
+& Cobertura de vértices & N & No existe grafo de entrada ni objetivo de cubrir aristas.\\
+& Ciclo hamiltoniano & N & La secuencia de buckets no exige visitar vértices una vez.\\
+& Errores frecuentes & P & Se reconoce que una analogía estructural no constituye reducción ni equivalencia.\\
+& Consecuencias prácticas & P & NP-completitud no implica que problemas polinomiales como esta simulación sean intratables.\\
+\midrule
+Aproximación & Algoritmos de aproximación & N & El factorial mide políticas; no aproxima una solución óptima NP-difícil.\\
+& Razón de aproximación & N & La frontera de Pareto no ofrece razón demostrable respecto de un óptimo único.\\
+& Análisis de garantías & P & Se analizan cotas amortizadas/esperadas, que no deben confundirse con garantía de aproximación.\\
+& Cobertura de vértices & N & No se implementa el algoritmo 2-aproximado ni existe un grafo de entrada.\\
+& Cobertura de conjuntos & N & Los buckets no constituyen una familia de conjuntos cuyo costo de cobertura se optimice.\\
+& Mochila aproximada & N & No hay capacidades, beneficios ni esquema de aproximación para mochila.\\
+\midrule
+Heurísticas y estrategias complementarias & Heurística vs. aproximación & P & La selección visual de un punto Pareto es una guía heurística, no una aproximación con razón probada.\\
+& Búsqueda local & N & No se explora un vecindario de configuraciones para mejorar iterativamente una solución.\\
+& Comparación con solución exacta & N & No existe un óptimo escalar exacto: el objetivo medido es multiobjetivo.\\
+& Calidad de solución & P & Se compara cada política mediante migraciones, memoria y colisiones, sin condensarlas en un puntaje.\\
+& Costo computacional & A & Tiempo, comparaciones, evaluaciones hash y migraciones se registran explícitamente.\\
+& Criterios de selección & P & La frontera de Pareto permite elegir según la prioridad de memoria, colisiones o reconstrucciones.\\
+& Limitaciones & A & La Sec. 8 delimita lenguaje, arquitectura, semillas, instrumentación y generalización.\\
+\bottomrule
+\end{longtable}
+\normalsize

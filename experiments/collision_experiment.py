@@ -9,7 +9,7 @@ from src.dynamic_hash_table import DynamicHashTable
 from src.generators import generate_random_keys
 
 
-DEFAULT_OUTPUT = Path("results/raw/collision_experiment.csv")
+DEFAULT_OUTPUT = Path("data/raw/collision_experiment.csv")
 LOAD_FACTORS = [value / 10 for value in range(1, 10)]
 
 
@@ -43,6 +43,7 @@ def run_collision_experiment(
                     "alpha": alpha,
                     "number_of_elements": number_of_elements,
                     "collisions": table.collisions,
+                    "pair_collisions": table.pair_collisions_current,
                     "collisions_per_operation": (
                         table.collisions / number_of_elements if number_of_elements else 0.0
                     ),

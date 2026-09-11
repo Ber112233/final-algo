@@ -1,0 +1,30 @@
+La corrida definitiva contiene \textbf{1800} unidades experimentales y
+30 repeticiones por celda. Para $N=100000$, la
+correlación de rangos entre $\gamma$ y migraciones por inserción, promediando
+$\tau$, fue -1.000; entre $\tau$ y colisiones por pares por clave,
+promediando $\gamma$, fue 0.949. El cociente medio entre pares
+observados y la cota universal fue 0.964. Estos valores describen
+la muestra de semillas y no convierten una esperanza en cota determinista.
+
+La menor migración media apareció en $(\gamma,\tau)=(4,
+0.70)$; el menor uso estructural final en
+(1.5,0.90); y la menor tasa de pares en
+(4,0.50). Que estos puntos no
+sean necesariamente el mismo tratamiento aporta evidencia empírica del
+compromiso multiobjetivo.
+
+\begin{table}[ht]
+\centering\small
+\caption{Promedios por $\gamma$ para $N=100000$, agregados sobre $\tau$ y semillas.}
+\begin{tabular}{rrrrrr}
+\toprule
+$\gamma$ & migr./ins. & bytes/elem. & pares/clave & resizes & ns/oper. \\
+\midrule
+1.25 & 4.508 & 157.7 & 0.333 & 40.2 & 66080.8 \\
+1.5 & 2.413 & 166.1 & 0.289 & 23.0 & 43657.2 \\
+2 & 1.491 & 187.3 & 0.222 & 14.0 & 33174.9 \\
+3 & 0.929 & 218.5 & 0.204 & 9.0 & 29056.5 \\
+4 & 0.723 & 276.8 & 0.189 & 7.2 & 27944.1 \\
+\bottomrule
+\end{tabular}
+\end{table}

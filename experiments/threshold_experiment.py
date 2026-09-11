@@ -6,7 +6,7 @@ from pathlib import Path
 from src.dynamic_hash_table import DynamicHashTable
 
 
-DEFAULT_OUTPUT = Path("results/raw/threshold_experiment.csv")
+DEFAULT_OUTPUT = Path("data/raw/threshold_experiment.csv")
 
 
 def run_threshold_experiment(

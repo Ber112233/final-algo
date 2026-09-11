@@ -56,3 +56,10 @@ def generate_keys(input_type: str, n: int, seed: int) -> list[int]:
     if input_type == "clustered":
         return generate_clustered_keys(n, seed)
     raise ValueError(f"unsupported input type: {input_type}")
+
+
+def generate_workload(input_type: str, n: int, key_seed: int, order_seed: int) -> list[int]:
+    """Generate a key set and independently control its insertion order."""
+    keys = generate_keys(input_type, n, key_seed)
+    random.Random(order_seed).shuffle(keys)
+    return keys

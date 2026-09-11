@@ -1,0 +1,23 @@
+\small
+\begin{longtable}{p{2.5cm}p{3cm}p{3cm}p{3.4cm}p{2.8cm}}
+\toprule
+Fuente & Problema/objetivo & Método & Resultado relevante & Uso y limitación \\
+\midrule\endfirsthead
+\toprule Fuente & Problema & Método & Resultado & Uso/limitación \\\midrule\endhead
+Carter--Wegman (1979) & Evitar supuestos benignos sobre claves & Familias universales y análisis probabilístico & Control de colisiones por pares & Fundamenta $C_{pares}$; no garantiza probes de sondeo lineal.\\
+Tarjan (1985) & Costear secuencias con eventos caros & Análisis amortizado & Costo medio acotado sobre secuencias & Marco para migraciones; no prescribe $(\gamma,\tau)$.\\
+Larson (1988) & Hashing dinámico en memoria & Diseño, análisis y experimentación & La expansión controla carga y reorganización & Paper núcleo más cercano; plataforma antigua.\\
+Dietzfelbinger et al. (1994) & Hashing perfecto dinámico & Estructura aleatorizada multinivel & Consultas de peor caso y actualización esperada & Contraste teórico; estructura distinta.\\
+Flajolet et al. (1998) & Costo del sondeo lineal & Combinatoria analítica & La carga cambia el régimen de probes & Respalda experimento secundario; no encadenamiento.\\
+Brodnik et al. (1999) & Arreglos redimensionables eficientes & Diseño y análisis tiempo--espacio & Bajo espacio extra con acceso eficiente & Contexto de reserva; no tabla hash.\\
+Pagh--Rodler (2004) & Búsqueda constante con dos posiciones & Cuckoo hashing & Rehash aleatorio ante ciclos & Relaciona aleatoriedad y reconstrucción; otro esquema.\\
+Pătraşcu--Thorup (2012) & Independencia práctica del hash & Análisis de tabulación simple & Garantías dependen de la aplicación & Evita generalizar universalidad a todo probing.\\
+Richter et al. (2015) & Comparar hashing multidimensionalmente & Benchmark experimental & No hay ganador universal & Motiva factorial y múltiples métricas.\\
+Li et al. (2021) & Hash dinámico en GPU & Diseño concurrente y evaluación & Crecimiento depende de arquitectura & Fuente reciente; no extrapolable a Python.\\
+Bender et al. (2022) & Sondeo lineal a alta carga & Análisis con tombstones & Reconstrucción y borrado cambian clustering & Contexto para probing; workload diferente.\\
+Bender et al. (2023) & Optimizar varios criterios & Diseño y análisis de Iceberg hashing & Trade-offs simultáneos & Motiva Pareto; estructura más compleja.\\
+Böther et al. (2023) & Hash vectorizado entre CPU & Benchmark multi-arquitectura & Hardware altera rankings & Amenaza externa; no prueba nuestra política.\\
+Tarjan--Zwick (2024) & Arreglos redimensionables óptimos & Cotas y construcción & Frontera tiempo--espacio refinada & Paper núcleo reciente; no define política hash.\\
+\bottomrule
+\end{longtable}
+\normalsize
